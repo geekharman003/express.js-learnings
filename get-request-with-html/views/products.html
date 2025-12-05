@@ -6,10 +6,18 @@
     <title>Document</title>
   </head>
   <body>
-    <form>
+    <form onsubmit="handleFormSubmit(event)">
       <label for="product">Product Name:</label>
       <input id="product" type="text" name="productName" />
-      <button>Add Product</button>
+      <button type="submit">Add Product</button>
     </form>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.11.0/axios.min.js"
+      integrity="sha512-h9644v03pHqrIHThkvXhB2PJ8zf5E9IyVnrSfZg8Yj8k4RsO4zldcQc4Bi9iVLUCCsqNY0b4WXVV4UB+wbWENA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="js/product.js"></script>
   </body>
 </html>
