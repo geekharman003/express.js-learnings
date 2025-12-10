@@ -7,7 +7,7 @@ app.use(express.json());
 
 app.use("/students", studentsRoutes);
 
-db.sync()
+db.sync({ force: false })
   .then(() => {
     app.listen(3000, () => {
       console.log("server is running");
