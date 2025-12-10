@@ -1,48 +1,34 @@
 const db = require("../utils/db-connection");
 const Student = require("../models/students");
-const getAllStudents = (req, res) => {
-  const fetchQuery = "SELECT * FROM students";
-  db.execute(fetchQuery, (err, result) => {
-    try {
-      if (err) {
-        res.status(500).send("error in fetching students details");
-        db.end();
-        throw new Error(err);
-      }
-
-      if (result.length === 0) {
-        res.status(404).send("no students found");
-        return;
-      }
-
-      res.status(200).send(result);
-    } catch (e) {
-      console.log(e.message);
+const getAllStudents = async (req, res) => {
+  try {
+    const students = await Student.findAll({ raw: true });
+    if (!students) {
+      res.status(404).send("students not found");
+      return;
     }
-  });
+
+    res.status(200).send(students);
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).send("error during fetching the students");
+  }
 };
 
-const getStudentWithId = (req, res) => {
-  const { id } = req.params;
-  const fetchQuery = "SELECT * FROM students WHERE id = ?";
-  db.execute(fetchQuery, [id], (err, result) => {
-    try {
-      if (err) {
-        res.status(500).send("error fetching student details");
-        db.end();
-        throw new Error(err);
-      }
-
-      if (result.length === 0) {
-        res.status(404).send(`no student found with id ${id}`);
-        return;
-      }
-
-      res.status(200).send(result);
-    } catch (e) {
-      console.log(e.message);
+const getStudentWithId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const student = await Student.findByPk(id, { raw: true });
+    if (!student) {
+      res.status(404).send("student not found");
+      return;
     }
-  });
+
+    res.status(200).send(student);
+  } catch (e) {
+    console.log(e.message);
+    res.status(404).send("student not found");
+  }
 };
 
 const addEntry = async (req, res) => {
