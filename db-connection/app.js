@@ -1,7 +1,10 @@
 const express = require("express");
 const db = require("./utils/db-connection");
-const studentModel = require("./models/students");
 const studentsRoutes = require("./routes/studentsRoutes");
+require("./models/students");
+require("./models/identityCard");
+require("./models/associations");
+require("./models/department");
 const app = express();
 app.use(express.json());
 

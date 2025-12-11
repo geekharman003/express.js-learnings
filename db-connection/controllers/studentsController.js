@@ -1,5 +1,5 @@
-const db = require("../utils/db-connection");
 const Student = require("../models/students");
+const identityCardModel = require("../models/identityCard");
 const getAllStudents = async (req, res) => {
   try {
     const students = await Student.findAll({ raw: true });
@@ -33,9 +33,9 @@ const getStudentWithId = async (req, res) => {
 
 const addEntry = async (req, res) => {
   try {
-    const { name, email, age } = req.body;
+    const { name, email, age, cardNumber } = req.body;
     if (!name || !email || !age) {
-      console.log("name, email and age is required");
+      console.log("name, email,age and cardNumber is required");
       return;
     }
 
@@ -43,6 +43,11 @@ const addEntry = async (req, res) => {
       Name: name,
       Email: email,
       age: age,
+    });
+
+    const identityCard = await identityCardModel.create({
+      cardNumber,
+      studentId: student.id,
     });
 
     res.status(200).send(`student with name ${name} added`);
