@@ -8,6 +8,12 @@ app.use(express.json());
 app.use("/users", userRoutes);
 app.use("/buses", busRoutes);
 
-app.listen(3000, () => {
-  console.log("server is running");
-});
+db.sync({force:false})
+  .then(() => {
+    app.listen(3000, () => {
+      console.log("server is running");
+    });
+  })
+  .catch((e) => {
+    console.log(e);
+  });

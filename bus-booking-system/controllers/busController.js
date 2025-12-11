@@ -1,43 +1,49 @@
-const db = require("../utils/db-connection");
-const getAvailableBuses = (req, res) => {
-  const { seats } = req.params;
-  const fetchQuery = `SELECT * FROM buses
-    WHERE availableSeats > ?`;
-  db.execute(fetchQuery, [seats], (err, result) => {
-    try {
-      if (err) {
-        res.status(500).send("error fetching available buses");
-        db.end();
-        throw new Error(err);
-      }
+const { Op } = require("sequelize");
+const BusModel = require("../models/bus");
+const getAvailableBuses = async (req, res) => {
+  try {
+    const { seats } = req.params;
+    const availablebuses = await BusModel.findAll({
+      where: {
+        availableSeats: {
+          [Op.gt]: seats,
+        },
+      },
+    });
 
-      res.status(200).send(result);
-    } catch (e) {
-      console.log(e);
+    if (!availablebuses) {
+      res.status(404).send("buses not found");
+      return;
     }
-  });
+
+    res.status(200).send(availablebuses);
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).send("error during fetching the buses");
+  }
 };
 
 const addBus = (req, res) => {
-  const { busNumber, totalSeats, availableSeats } = req.body;
-  const inertQuery = `INSERT INTO buses (busNumber,totalSeats,availableSeats)
-    VALUES (?,?,?)`;
-
-  db.execute(inertQuery, [busNumber, totalSeats, availableSeats], (err) => {
-    try {
-      if (err) {
-        res
-          .status(500)
-          .send("busNumber,totalSeats and AvailableSeats are required");
-        db.end();
-        throw new Error(err);
-      }
-
-      res.status(200).send(`bus with bus number ${busNumber} added`);
-    } catch (e) {
-      console.log(e);
+  try {
+    const { busNumber, totalSeats, availableSeats } = req.body;
+    if (!busNumber || !totalSeats || !availableSeats) {
+      res
+        .status(400)
+        .send("busNumber,totalSeats and availableSeats are required");
+      return;
     }
-  });
+
+    const bus = BusModel.create({
+      busNumber,
+      totalSeats,
+      availableSeats,
+    });
+
+    res.status(200).send("bus added successfully");
+  } catch (e) {
+    console.log(e.message);
+    res.status(500).send("error occur during adding the bus");
+  }
 };
 
 module.exports = { getAvailableBuses, addBus };
