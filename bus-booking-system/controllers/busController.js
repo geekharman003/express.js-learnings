@@ -1,5 +1,7 @@
 const { Op } = require("sequelize");
 const BusModel = require("../models/bus");
+const Booking = require("../models/booking");
+const User = require("../models/user");
 const getAvailableBuses = async (req, res) => {
   try {
     const { seats } = req.params;
@@ -20,6 +22,35 @@ const getAvailableBuses = async (req, res) => {
   } catch (e) {
     console.log(e.message);
     res.status(500).send("error during fetching the buses");
+  }
+};
+
+const getAllBookings = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const busBookings = await Booking.findAll(
+      {
+        include: [
+          {
+            model: User,
+          },
+        ],
+      },
+      {
+        where: {
+          busId: id,
+        },
+      }
+    );
+
+    if (!busBookings) {
+      res.status(404).send("bookings not found");
+      return;
+    }
+
+    res.status(200).json(busBookings);
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 };
 
@@ -46,4 +77,4 @@ const addBus = (req, res) => {
   }
 };
 
-module.exports = { getAvailableBuses, addBus };
+module.exports = { getAvailableBuses, getAllBookings, addBus };

@@ -1,4 +1,3 @@
-const { raw } = require("mysql2");
 const Courses = require("../models/courses");
 const studentModel = require("../models/students");
 
